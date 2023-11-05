@@ -32,10 +32,27 @@ async function run() {
 
         // Database Name
         const tabJobsCollection = client.db('assignment-11-jwt').collection('webDevelopment');
+        const digitalMarketCollection = client.db('assignment-11-jwt').collection('digitalMarketing');
+        const graphicsDesignCollection = client.db('assignment-11-jwt').collection('graphicsDesign');
 
+        // web development data show tabs
         app.get('/webDevelopment', async (req, res) => {
             const browseJob = tabJobsCollection.find();
             const jobResult = await browseJob.toArray();
+            res.send(jobResult);
+        });
+
+        // digital marketing data show in tabs
+        app.get('/digitalMarketing', async (req, res) => {
+            const digitalJob = digitalMarketCollection.find();
+            const jobResult = await digitalJob.toArray();
+            res.send(jobResult);
+        });
+
+        // graphics design data receive from database
+        app.get('/graphics', async (req, res) => {
+            const graphics = graphicsDesignCollection.find();
+            const jobResult = await graphics.toArray();
             res.send(jobResult);
         });
 
