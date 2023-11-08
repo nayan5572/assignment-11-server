@@ -13,7 +13,6 @@ app.use(express.json());
 console.log(process.env.DB_USER);
 
 
-// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.wlyyget.mongodb.net/?retryWrites=true&w=majority`;
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.wlyyget.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -47,18 +46,26 @@ async function run() {
             res.send(jobResult);
         });
 
-        // special id card going
-        // app.get('/webDevelopment/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = { _id: new ObjectId(id) }
+        app.get('/bitWeb', async (req, res) => {
+            const browseJob = bitWebCollection.find();
+            const jobResult = await browseJob.toArray();
+            res.send(jobResult);
+        });
 
-        //     const options = {
-        //         projection: { jobTitle: 1, priceRange: 1, service_id: 1, img: 1 }
-        //     }
+        // web digitalMar data show tabs
+        app.get('/digitalMar', async (req, res) => {
+            const browseJob = digitalMarketCollection.find();
+            const jobResult = await browseJob.toArray();
+            res.send(jobResult);
+        });
 
-        //     const result = await tabJobsCollection.findOne(query, options);
-        //     res.send(result);
-        // })
+        // graphics data show tabs
+        app.get('/graphicsDesign', async (req, res) => {
+            const browseJob = graphicsDesignCollection.find();
+            const jobResult = await browseJob.toArray();
+            res.send(jobResult);
+        });
+
 
         // digital marketing data show in tabs
         app.get('/digitalMarketing', async (req, res) => {
@@ -85,6 +92,27 @@ async function run() {
             res.send(result);
         });
 
+        // for digital marketing
+        app.get('/digitalMar/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const options = {
+                project: { jobTitle: 1, priceRange: 1, service_id: 1, img: 1 }
+            }
+            const result = await digitalMarketCollection.findOne(query, options);
+            res.send(result);
+        });
+        // for graphics design
+        app.get('/graphicsDesign/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const options = {
+                project: { jobTitle: 1, priceRange: 1, service_id: 1, img: 1 }
+            }
+            const result = await graphicsDesignCollection.findOne(query, options);
+            res.send(result);
+        });
+
         // bid data send to MongoDB
         app.post('/bitWeb', async (req, res) => {
             const product = req.body;
@@ -107,15 +135,8 @@ async function run() {
             res.send(result);
         });
 
-        // app.get('/addJob/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = { _id: new ObjectId(id) };
-        //     const result = await addJobCollection.deleteOne(query);
-        //     res.send(result);
-        // });
 
-
-        // delete add jobs from MongoDB
+        // delete from server
         app.delete('/addJob/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
@@ -123,16 +144,53 @@ async function run() {
             res.send(result);
         });
 
+        // update add product
         app.get('/addJob/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: new ObjectId(id) }
-            const options = {
-                project: { jobTitle: 1, priceRange: 1, service_id: 1, img: 1 }
-            }
-            const result = await addJobCollection.findOne(query, options);
+            const query = { _id: new ObjectId(id) };
+            const result = await addJobCollection.findOne(query);
             res.send(result);
         });
 
+        // update client data
+        app.put('/addJob/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updateData = req.body;
+
+            const addProduct = {
+                $set: {
+                    description: updateData.description,
+                    jobTitle: updateData.jobTitle,
+                    deadline: updateData.deadline,
+                    category: updateData.category,
+                    minPrice: updateData.minPrice,
+                    maxPrice: updateData.maxPrice
+                }
+            }
+
+            const result = await addJobCollection.updateOne(filter, addProduct, options);
+            res.send(result);
+        });
+
+        // app.patch('/addJob/:id', logger, async (req, res) => {
+        //     const id = req.params.id;
+        //     const filter = { _id: new ObjectId(id) };
+        //     const updateData = req.body;
+        //     const updateDoc = {
+        //         $set: {
+        //             description: updateData.description,
+        //             jobTitle: updateData.jobTitle,
+        //             deadline: updateData.deadline,
+        //             category: updateData.category,
+        //             minPrice: updateData.minPrice,
+        //             maxPrice: updateData.maxPrice
+        //         },
+        //     };
+        //     const result = await bookingCollection.updateOne(filter, updateDoc);
+        //     res.send(result);
+        // });
 
 
 
