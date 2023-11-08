@@ -1,6 +1,6 @@
 const express = require('express')
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 4000;
@@ -30,10 +30,15 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
 
-        // Database Name
+        // Database collecting Name 
         const tabJobsCollection = client.db('assignment-11-jwt').collection('webDevelopment');
         const digitalMarketCollection = client.db('assignment-11-jwt').collection('digitalMarketing');
         const graphicsDesignCollection = client.db('assignment-11-jwt').collection('graphicsDesign');
+
+        const bitWebCollection = client.db('assignment-11-jwt').collection('bitWeb');
+
+        // collection for add job
+        const addJobCollection = client.db('assignment-11-jwt').collection('addJob');
 
         // web development data show tabs
         app.get('/webDevelopment', async (req, res) => {
@@ -41,6 +46,19 @@ async function run() {
             const jobResult = await browseJob.toArray();
             res.send(jobResult);
         });
+
+        // special id card going
+        // app.get('/webDevelopment/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { _id: new ObjectId(id) }
+
+        //     const options = {
+        //         projection: { jobTitle: 1, priceRange: 1, service_id: 1, img: 1 }
+        //     }
+
+        //     const result = await tabJobsCollection.findOne(query, options);
+        //     res.send(result);
+        // })
 
         // digital marketing data show in tabs
         app.get('/digitalMarketing', async (req, res) => {
@@ -61,15 +79,59 @@ async function run() {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const options = {
-                project: { title: 1, price: 1, service_id: 1, img: 1 }
+                project: { jobTitle: 1, priceRange: 1, service_id: 1, img: 1 }
             }
             const result = await tabJobsCollection.findOne(query, options);
             res.send(result);
         });
 
+        // bid data send to MongoDB
+        app.post('/bitWeb', async (req, res) => {
+            const product = req.body;
+            const result = await bitWebCollection.insertOne(product);
+            res.send(result);
+        });
+
+        // add job to MongoDB
+        app.post('/addJob', async (req, res) => {
+            const product = req.body;
+            const result = await addJobCollection.insertOne(product);
+            res.send(result);
+        });
 
 
+        // add job from MongoDB
+        app.get('/addJob', async (req, res) => {
+            const cursor = addJobCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        });
 
+        // app.get('/addJob/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { _id: new ObjectId(id) };
+        //     const result = await addJobCollection.deleteOne(query);
+        //     res.send(result);
+        // });
+
+
+        // delete add jobs from MongoDB
+        app.delete('/addJob/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await addJobCollection.deleteOne(query);
+            res.send(result);
+        });
+
+        app.get('/addJob/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const options = {
+                project: { jobTitle: 1, priceRange: 1, service_id: 1, img: 1 }
+            }
+            const result = await addJobCollection.findOne(query, options);
+            res.send(result);
+        });
 
 
 
