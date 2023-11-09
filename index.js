@@ -45,8 +45,6 @@ async function run() {
         // collection for add job
         const addJobCollection = client.db('assignment-11-jwt').collection('addJob');
 
-        // my bids collection
-        const myBidsCollection = client.db('assignment-11-jwt').collection('myBids');
 
         // web development data show tabs
         app.get('/webDevelopment', async (req, res) => {
@@ -129,19 +127,6 @@ async function run() {
             res.send(result);
         });
 
-        // myBids data
-        app.post('/myBids', async (req, res) => {
-            const bids = req.body;
-            const result = await myBidsCollection.insertOne(bids);
-            res.send(result);
-        });
-
-        // add job from MongoDB
-        app.get('/myBids', async (req, res) => {
-            const cursor = myBidsCollection.find();
-            const result = await cursor.toArray();
-            res.send(result);
-        });
 
         // delete data from client side and server side
         app.delete('/bitWeb/:id', async (req, res) => {
