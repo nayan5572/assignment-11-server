@@ -45,6 +45,9 @@ async function run() {
         // collection for add job
         const addJobCollection = client.db('assignment-11-jwt').collection('addJob');
 
+        // my bids collection
+        const myBidsCollection = client.db('assignment-11-jwt').collection('myBids');
+
         // web development data show tabs
         app.get('/webDevelopment', async (req, res) => {
             const browseJob = tabJobsCollection.find();
@@ -126,6 +129,21 @@ async function run() {
             res.send(result);
         });
 
+        // delete data from client side and server side
+        app.delete('/bitWeb/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await bitWebCollection.deleteOne(query);
+            res.send(result);
+        });
+
+        // app.get('/bitWeb/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { _id: new ObjectId(id) };
+        //     const result = await bitWebCollection.findOne(query);
+        //     res.send(result);
+        // });
+
         // add job to MongoDB
         app.post('/addJob', async (req, res) => {
             const product = req.body;
@@ -179,25 +197,6 @@ async function run() {
             const result = await addJobCollection.updateOne(filter, addProduct, options);
             res.send(result);
         });
-
-        // app.patch('/addJob/:id', logger, async (req, res) => {
-        //     const id = req.params.id;
-        //     const filter = { _id: new ObjectId(id) };
-        //     const updateData = req.body;
-        //     const updateDoc = {
-        //         $set: {
-        //             description: updateData.description,
-        //             jobTitle: updateData.jobTitle,
-        //             deadline: updateData.deadline,
-        //             category: updateData.category,
-        //             minPrice: updateData.minPrice,
-        //             maxPrice: updateData.maxPrice
-        //         },
-        //     };
-        //     const result = await bookingCollection.updateOne(filter, updateDoc);
-        //     res.send(result);
-        // });
-
 
 
         // Send a ping to confirm a successful connection
