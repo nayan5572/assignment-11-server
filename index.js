@@ -129,6 +129,20 @@ async function run() {
             res.send(result);
         });
 
+        // myBids data
+        app.post('/myBids', async (req, res) => {
+            const bids = req.body;
+            const result = await myBidsCollection.insertOne(bids);
+            res.send(result);
+        });
+
+        // add job from MongoDB
+        app.get('/myBids', async (req, res) => {
+            const cursor = myBidsCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
         // delete data from client side and server side
         app.delete('/bitWeb/:id', async (req, res) => {
             const id = req.params.id;
@@ -137,12 +151,6 @@ async function run() {
             res.send(result);
         });
 
-        // app.get('/bitWeb/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = { _id: new ObjectId(id) };
-        //     const result = await bitWebCollection.findOne(query);
-        //     res.send(result);
-        // });
 
         // add job to MongoDB
         app.post('/addJob', async (req, res) => {
